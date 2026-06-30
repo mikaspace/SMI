@@ -74,6 +74,14 @@ export default function HomeScreen() {
   <Text style={styles.navText}>Savings</Text>
 </TouchableOpacity>
 
+<TouchableOpacity
+  style={styles.navItem}
+  onPress={() => router.push("/member/ProfileScreen")}
+>
+  <Feather name="user" size={20} color="#708174" />
+  <Text style={styles.navText}>Profile</Text>
+</TouchableOpacity>
+
           <TouchableOpacity style={styles.navItem}>
             <Feather name="users" size={20} color="#708174" />
             <Text style={styles.navText}>Members</Text>
@@ -137,6 +145,7 @@ export default function HomeScreen() {
             <Text style={styles.infoAmount}>₱—</Text>
             <Text style={styles.infoSub}>for ›</Text>
           </TouchableOpacity>
+          
         </View>
       </ScrollView>
 

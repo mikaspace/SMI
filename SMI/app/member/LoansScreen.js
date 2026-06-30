@@ -70,6 +70,14 @@ export default function LoansScreen() {
   <MaterialCommunityIcons name="piggy-bank-outline" size={20} color="#708174" />
   <Text style={styles.navText}>Savings</Text>
 </TouchableOpacity>
+
+<TouchableOpacity
+  style={styles.navItem}
+  onPress={() => router.push("/member/ProfileScreen")}
+>
+  <Feather name="user" size={20} color="#708174" />
+  <Text style={styles.navText}>Profile</Text>
+</TouchableOpacity>
         </View>
 
         <View style={styles.sidebarBottom}>

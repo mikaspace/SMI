@@ -1,5 +1,6 @@
 // app/member/LoansScreen.js
 
+import { useRouter } from "expo-router";
 import React from "react";
 import {
   View,
@@ -10,7 +11,10 @@ import {
 } from "react-native";
 import { Ionicons, Feather, MaterialCommunityIcons } from "@expo/vector-icons";
 
+
 export default function LoansScreen() {
+  const router = useRouter();
+
   return (
     <View style={styles.page}>
       <View style={styles.sidebar}>
@@ -51,10 +55,13 @@ export default function LoansScreen() {
             <Text style={styles.navActiveText}>Loans</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.navItem}>
-            <Feather name="trending-up" size={20} color="#708174" />
-            <Text style={styles.navText}>Dividends</Text>
-          </TouchableOpacity>
+          <TouchableOpacity
+  style={styles.navItem}
+  onPress={() => router.push("/member/DividendsScreen")}
+>
+  <Feather name="trending-up" size={20} color="#708174" />
+  <Text style={styles.navText}>Dividends</Text>
+</TouchableOpacity>
 
           <TouchableOpacity style={styles.navItem}>
             <MaterialCommunityIcons name="piggy-bank-outline" size={20} color="#708174" />

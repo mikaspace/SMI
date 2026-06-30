@@ -1,4 +1,4 @@
-// app/member/HomeScreen.js
+// app/member/DividendsScreen.js
 
 import React from "react";
 import {
@@ -11,7 +11,7 @@ import {
 import { Feather, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 
-export default function HomeScreen() {
+export default function DividendsScreen() {
   const router = useRouter();
 
   return (
@@ -45,9 +45,12 @@ export default function HomeScreen() {
         </View>
 
         <View style={styles.navArea}>
-          <TouchableOpacity style={[styles.navItem, styles.navActive]}>
-            <Feather name="grid" size={20} color="#ffffff" />
-            <Text style={styles.navActiveText}>Home</Text>
+          <TouchableOpacity
+            style={styles.navItem}
+            onPress={() => router.push("/member/HomeScreen")}
+          >
+            <Feather name="grid" size={20} color="#708174" />
+            <Text style={styles.navText}>Home</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -58,22 +61,14 @@ export default function HomeScreen() {
             <Text style={styles.navText}>Loans</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity
-            style={styles.navItem}
-            onPress={() => router.push("/member/DividendsScreen")}
-          >
-            <Feather name="trending-up" size={20} color="#708174" />
-            <Text style={styles.navText}>Dividends</Text>
+          <TouchableOpacity style={[styles.navItem, styles.navActive]}>
+            <Feather name="trending-up" size={20} color="#ffffff" />
+            <Text style={styles.navActiveText}>Dividends</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.navItem}>
             <MaterialCommunityIcons name="piggy-bank-outline" size={20} color="#708174" />
             <Text style={styles.navText}>Savings</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.navItem}>
-            <Feather name="users" size={20} color="#708174" />
-            <Text style={styles.navText}>Members</Text>
           </TouchableOpacity>
         </View>
 
@@ -92,7 +87,7 @@ export default function HomeScreen() {
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.topBar}>
-          <Text style={styles.topLabel}>HOME</Text>
+          <Text style={styles.topLabel}>DIVIDENDS</Text>
 
           <View style={styles.bellWrap}>
             <Feather name="bell" size={20} color="#697869" />
@@ -100,46 +95,86 @@ export default function HomeScreen() {
           </View>
         </View>
 
-        <View style={styles.mainCard}>
+        <View style={styles.header}>
+          <Text style={styles.title}>Dividends</Text>
+          <Text style={styles.subtitle}>Interest on Share Capital</Text>
+        </View>
+
+        <View style={styles.pendingNotice}>
+          <Ionicons name="time-outline" size={17} color="#e86f00" />
           <View>
-            <Text style={styles.cardLabel}>TOTAL SAVINGS</Text>
-            <Text style={styles.totalAmount}>₱0.00</Text>
-
-            <View style={styles.activeRow}>
-              <View style={styles.greenDot} />
-              <Text style={styles.activeText}>Active Member since 2015</Text>
-            </View>
+            <Text style={styles.pendingTitle}>FY 2024 dividend pending</Text>
+            <Text style={styles.pendingSub}>Projected rate: ~13% · Est. Feb 2025</Text>
           </View>
-
-          <View style={styles.cardCircle} />
         </View>
 
-        <View style={styles.infoRow}>
-          <TouchableOpacity
-            style={styles.infoCard}
-            onPress={() => router.push("/member/LoansScreen")}
-          >
-            <Feather name="credit-card" size={20} color="#d49a10" />
-            <Text style={styles.infoLabel}>LOAN BALANCE</Text>
-            <Text style={styles.infoAmount}>₱0.00</Text>
-            <Text style={styles.infoSub}>0 active ›</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.infoCard}
-            onPress={() => router.push("/member/DividendsScreen")}
-          >
-            <Feather name="trending-up" size={20} color="#d49a10" />
-            <Text style={styles.infoLabel}>LAST DIVIDEND</Text>
-            <Text style={styles.infoAmount}>₱—</Text>
-            <Text style={styles.infoSub}>for ›</Text>
-          </TouchableOpacity>
+        <View style={styles.totalCard}>
+          <Text style={styles.totalLabel}>TOTAL DIVIDENDS EARNED</Text>
+          <Text style={styles.totalAmount}>₱15,050.00</Text>
+          <Text style={styles.totalSub}>Since 2018</Text>
         </View>
+
+        <DividendItem
+          year="FY 2024"
+          status="Pending"
+          statusType="pending"
+          details="Rate: ~13% · Est. Feb 2025"
+          amount="—"
+        />
+
+        <DividendItem
+          year="FY 2021"
+          status="Paid"
+          statusType="paid"
+          details="Rate: 11% · Feb 20, 2022"
+          amount="₱4,400.00"
+        />
+
+        <DividendItem
+          year="FY 2022"
+          status="Paid"
+          statusType="paid"
+          details="Rate: 10% · Mar 15, 2023"
+          amount="₱4,800.00"
+        />
+
+        <DividendItem
+          year="FY 2023"
+          status="Paid"
+          statusType="paid"
+          details="Rate: 12% · Feb 28, 2024"
+          amount="₱5,850.00"
+        />
       </ScrollView>
+    </View>
+  );
+}
 
-      <TouchableOpacity style={styles.helpButton}>
-        <Text style={styles.helpText}>?</Text>
-      </TouchableOpacity>
+function DividendItem({ year, status, statusType, details, amount }) {
+  const isPaid = statusType === "paid";
+
+  return (
+    <View style={styles.dividendCard}>
+      <View>
+        <View style={styles.dividendTopRow}>
+          <Text style={styles.dividendYear}>{year}</Text>
+
+          <View style={isPaid ? styles.paidBadge : styles.pendingBadge}>
+            <Ionicons
+              name={isPaid ? "checkmark-circle-outline" : "time-outline"}
+              size={13}
+              color={isPaid ? "#00a86b" : "#e86f00"}
+            />
+            <Text style={isPaid ? styles.paidText : styles.pendingBadgeText}>
+              {status}
+            </Text>
+          </View>
+        </View>
+
+        <Text style={styles.dividendDetails}>{details}</Text>
+      </View>
+
+      <Text style={styles.dividendAmount}>{amount}</Text>
     </View>
   );
 }
@@ -152,17 +187,17 @@ const styles = StyleSheet.create({
   },
 
   sidebar: {
-    width: 286,
+    width: 256,
     backgroundColor: "#fbfaf6",
     borderRightWidth: 1,
     borderRightColor: "#ddd8cf",
   },
 
   brandRow: {
-    height: 90,
+    height: 84,
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 20,
+    paddingHorizontal: 16,
     borderBottomWidth: 1,
     borderBottomColor: "#ddd8cf",
   },
@@ -191,22 +226,22 @@ const styles = StyleSheet.create({
   },
 
   profileRow: {
-    height: 78,
+    height: 70,
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 20,
+    paddingHorizontal: 16,
     borderBottomWidth: 1,
     borderBottomColor: "#ddd8cf",
   },
 
   avatar: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
+    width: 38,
+    height: 38,
+    borderRadius: 19,
     backgroundColor: "#174a33",
     justifyContent: "center",
     alignItems: "center",
-    marginRight: 14,
+    marginRight: 12,
   },
 
   avatarText: {
@@ -245,17 +280,17 @@ const styles = StyleSheet.create({
   },
 
   navArea: {
-    paddingTop: 18,
-    paddingHorizontal: 13,
+    paddingTop: 24,
+    paddingHorizontal: 12,
   },
 
   navItem: {
-    height: 46,
+    height: 42,
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 14,
-    marginBottom: 2,
-    borderRadius: 14,
+    paddingHorizontal: 12,
+    marginBottom: 4,
+    borderRadius: 13,
   },
 
   navActive: {
@@ -279,14 +314,14 @@ const styles = StyleSheet.create({
     marginTop: "auto",
     borderTopWidth: 1,
     borderTopColor: "#ddd8cf",
-    paddingTop: 26,
+    paddingTop: 22,
     paddingBottom: 26,
   },
 
   bottomItem: {
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 26,
+    paddingHorizontal: 22,
     marginBottom: 28,
   },
 
@@ -298,7 +333,7 @@ const styles = StyleSheet.create({
 
   content: {
     flex: 1,
-    paddingHorizontal: 220,
+    paddingHorizontal: 390,
   },
 
   topBar: {
@@ -313,7 +348,7 @@ const styles = StyleSheet.create({
   topLabel: {
     fontSize: 12,
     color: "#697869",
-    letterSpacing: 2,
+    letterSpacing: 3,
   },
 
   bellWrap: {
@@ -330,117 +365,151 @@ const styles = StyleSheet.create({
     backgroundColor: "#c4ae42",
   },
 
-  mainCard: {
-    height: 148,
-    marginTop: 28,
-    borderRadius: 15,
-    backgroundColor: "#21583b",
-    paddingHorizontal: 22,
-    paddingVertical: 24,
-    overflow: "hidden",
-    flexDirection: "row",
-    justifyContent: "space-between",
+  header: {
+    marginTop: 20,
+    marginBottom: 22,
   },
 
-  cardLabel: {
-    fontSize: 12,
-    letterSpacing: 2,
-    color: "#b5c7b9",
+  title: {
+    fontSize: 25,
+    fontWeight: "700",
+    color: "#001c13",
+    fontFamily: "serif",
+  },
+
+  subtitle: {
+    fontSize: 13,
+    color: "#174a33",
+    marginTop: 5,
+  },
+
+  pendingNotice: {
+    minHeight: 60,
+    borderWidth: 1,
+    borderColor: "#f2c94c",
+    backgroundColor: "#fff9e8",
+    borderRadius: 12,
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 18,
+    marginBottom: 22,
+  },
+
+  pendingTitle: {
+    color: "#c45f00",
+    fontSize: 13,
+    fontWeight: "800",
+    marginLeft: 12,
+  },
+
+  pendingSub: {
+    color: "#9b4d00",
+    fontSize: 11,
+    marginLeft: 12,
+    marginTop: 5,
+  },
+
+  totalCard: {
+    height: 106,
+    backgroundColor: "#174a33",
+    borderRadius: 12,
+    paddingHorizontal: 18,
+    paddingVertical: 20,
+    marginBottom: 20,
+  },
+
+  totalLabel: {
+    color: "#93aa99",
+    fontSize: 10,
+    letterSpacing: 1.5,
     fontWeight: "800",
   },
 
   totalAmount: {
-    color: "#fff8e8",
-    fontSize: 38,
+    color: "#ffffff",
+    fontSize: 31,
     fontWeight: "800",
-    marginTop: 12,
+    marginTop: 14,
     fontFamily: "serif",
   },
 
-  activeRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: 18,
+  totalSub: {
+    color: "#b7cbbb",
+    fontSize: 11,
+    marginTop: 5,
   },
 
-  greenDot: {
-    width: 7,
-    height: 7,
-    borderRadius: 4,
-    backgroundColor: "#62d6b0",
-    marginRight: 8,
-  },
-
-  activeText: {
-    color: "#d2e1d5",
-    fontSize: 14,
-  },
-
-  cardCircle: {
-    position: "absolute",
-    right: -40,
-    top: -35,
-    width: 170,
-    height: 170,
-    borderRadius: 85,
-    backgroundColor: "rgba(139, 181, 151, 0.35)",
-  },
-
-  infoRow: {
-    flexDirection: "row",
-    marginTop: 24,
-    columnGap: 14,
-  },
-
-  infoCard: {
-    flex: 1,
-    height: 139,
+  dividendCard: {
+    height: 64,
     backgroundColor: "#fbfaf6",
-    borderRadius: 15,
+    borderRadius: 12,
     borderWidth: 1,
     borderColor: "#ddd8cf",
-    padding: 20,
-  },
-
-  infoLabel: {
-    color: "#526758",
-    fontSize: 11,
-    letterSpacing: 1.5,
-    marginTop: 16,
-  },
-
-  infoAmount: {
-    color: "#001c13",
-    fontSize: 22,
-    fontWeight: "800",
-    marginTop: 8,
-    fontFamily: "serif",
-  },
-
-  infoSub: {
-    color: "#526758",
-    fontSize: 12,
-    marginTop: 10,
-  },
-
-  helpButton: {
-    position: "absolute",
-    right: 18,
-    bottom: 18,
-    width: 38,
-    height: 38,
-    borderRadius: 19,
-    backgroundColor: "#222222",
-    justifyContent: "center",
+    paddingHorizontal: 17,
+    marginBottom: 14,
+    flexDirection: "row",
     alignItems: "center",
-    shadowColor: "#000",
-    shadowOpacity: 0.25,
-    shadowRadius: 8,
-    elevation: 5,
+    justifyContent: "space-between",
   },
 
-  helpText: {
-    color: "#fff",
-    fontSize: 22,
+  dividendTopRow: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+
+  dividendYear: {
+    fontSize: 15,
+    fontWeight: "700",
+    color: "#001c13",
+    fontFamily: "serif",
+    marginRight: 12,
+  },
+
+  paidBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#eafff4",
+    borderWidth: 1,
+    borderColor: "#83e8b9",
+    borderRadius: 12,
+    paddingVertical: 3,
+    paddingHorizontal: 8,
+  },
+
+  paidText: {
+    color: "#00a86b",
+    fontSize: 11,
+    fontWeight: "700",
+    marginLeft: 4,
+  },
+
+  pendingBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#fff4df",
+    borderWidth: 1,
+    borderColor: "#ffc46b",
+    borderRadius: 12,
+    paddingVertical: 3,
+    paddingHorizontal: 8,
+  },
+
+  pendingBadgeText: {
+    color: "#e86f00",
+    fontSize: 11,
+    fontWeight: "700",
+    marginLeft: 4,
+  },
+
+  dividendDetails: {
+    color: "#174a33",
+    fontSize: 10,
+    marginTop: 5,
+  },
+
+  dividendAmount: {
+    color: "#001c13",
+    fontSize: 15,
+    fontWeight: "800",
   },
 });

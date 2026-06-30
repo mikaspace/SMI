@@ -4,3 +4,5 @@ To run:
 
 1. Install all react native + expo extensions
 2. run in terminal with "npx expo start -c"
+
+TESTING TUAZON

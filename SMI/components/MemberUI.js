@@ -7,6 +7,8 @@ import {
   SafeAreaView,
   StatusBar,
   ScrollView,
+  Platform,
+  useWindowDimensions,
 } from "react-native";
 import { Feather, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
@@ -61,98 +63,121 @@ const tabs = [
 
 export function MemberScreen({ active, title, subtitle, children }) {
   const router = useRouter();
+  const { width, height } = useWindowDimensions();
+
+  const isDesktopWeb = Platform.OS === "web" && width >= 768;
+  const phoneHeight = Math.min(height - 32, 900);
+
+  const content = (
+    <View style={styles.app}>
+      <View style={styles.header}>
+        <View style={styles.brandRow}>
+          <View style={styles.logoCircle}>
+            <MaterialCommunityIcons
+              name="piggy-bank-outline"
+              size={21}
+              color="#ffffff"
+            />
+          </View>
+
+          <View style={styles.brandTextWrap}>
+            <Text style={styles.brandName}>CoopConnect</Text>
+            <Text style={styles.brandSub}>MEMBER PORTAL</Text>
+          </View>
+
+          <TouchableOpacity style={styles.bellButton}>
+            <Feather name="bell" size={19} color="#ffffff" />
+            <View style={styles.notificationDot} />
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.memberCard}>
+          <View style={styles.avatar}>
+            <Text style={styles.avatarText}>MS</Text>
+          </View>
+
+          <View style={styles.memberInfo}>
+            <Text style={styles.memberName}>Maria Santos</Text>
+            <Text style={styles.memberId}>MBR-00472</Text>
+          </View>
+
+          <View style={styles.memberBadge}>
+            <Feather name="user" size={12} color={theme.green} />
+            <Text style={styles.memberBadgeText}>Member</Text>
+          </View>
+        </View>
+      </View>
+
+      <ScrollView
+        style={styles.content}
+        contentContainerStyle={styles.contentInner}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.pageTitleWrap}>
+          <Text style={styles.pageEyebrow}>{active.toUpperCase()}</Text>
+          <Text style={styles.pageTitle}>{title}</Text>
+          {!!subtitle && <Text style={styles.pageSubtitle}>{subtitle}</Text>}
+        </View>
+
+        {children}
+      </ScrollView>
+
+      <View style={styles.bottomNav}>
+        {tabs.map((item) => {
+          const selected = item.label === active;
+
+          return (
+            <TouchableOpacity
+              key={item.label}
+              style={styles.tabItem}
+              onPress={() => router.push(item.route)}
+            >
+              {item.library === "MaterialCommunityIcons" ? (
+                <MaterialCommunityIcons
+                  name={item.icon}
+                  size={21}
+                  color={selected ? theme.green : "#7b897d"}
+                />
+              ) : (
+                <Feather
+                  name={item.icon}
+                  size={21}
+                  color={selected ? theme.green : "#7b897d"}
+                />
+              )}
+
+              <Text style={selected ? styles.tabTextActive : styles.tabText}>
+                {item.label}
+              </Text>
+
+              {selected && <View style={styles.tabActiveLine} />}
+            </TouchableOpacity>
+          );
+        })}
+      </View>
+    </View>
+  );
+
+  if (isDesktopWeb) {
+    return (
+      <SafeAreaView style={styles.webSafe}>
+        <View style={styles.webCenter}>
+          <View style={[styles.phoneShell, { height: phoneHeight }]}>
+            <StatusBar
+              barStyle="light-content"
+              backgroundColor={theme.greenDark}
+            />
+            {content}
+          </View>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.safe}>
       <StatusBar barStyle="light-content" backgroundColor={theme.greenDark} />
-
-      <View style={styles.app}>
-        <View style={styles.header}>
-          <View style={styles.brandRow}>
-            <View style={styles.logoCircle}>
-              <MaterialCommunityIcons
-                name="piggy-bank-outline"
-                size={21}
-                color="#ffffff"
-              />
-            </View>
-
-            <View style={styles.brandTextWrap}>
-              <Text style={styles.brandName}>CoopConnect</Text>
-              <Text style={styles.brandSub}>MEMBER PORTAL</Text>
-            </View>
-
-            <TouchableOpacity style={styles.bellButton}>
-              <Feather name="bell" size={19} color="#ffffff" />
-              <View style={styles.notificationDot} />
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.memberCard}>
-            <View style={styles.avatar}>
-              <Text style={styles.avatarText}>MS</Text>
-            </View>
-
-            <View style={styles.memberInfo}>
-              <Text style={styles.memberName}>Maria Santos</Text>
-              <Text style={styles.memberId}>MBR-00472</Text>
-            </View>
-
-            <View style={styles.memberBadge}>
-              <Feather name="user" size={12} color={theme.green} />
-              <Text style={styles.memberBadgeText}>Member</Text>
-            </View>
-          </View>
-        </View>
-
-        <ScrollView
-          style={styles.content}
-          contentContainerStyle={styles.contentInner}
-          showsVerticalScrollIndicator={false}
-        >
-          <View style={styles.pageTitleWrap}>
-            <Text style={styles.pageEyebrow}>{active.toUpperCase()}</Text>
-            <Text style={styles.pageTitle}>{title}</Text>
-            {!!subtitle && <Text style={styles.pageSubtitle}>{subtitle}</Text>}
-          </View>
-
-          {children}
-        </ScrollView>
-
-        <View style={styles.bottomNav}>
-          {tabs.map((item) => {
-            const selected = item.label === active;
-
-            return (
-              <TouchableOpacity
-                key={item.label}
-                style={styles.tabItem}
-                onPress={() => router.push(item.route)}
-              >
-                {item.library === "MaterialCommunityIcons" ? (
-                  <MaterialCommunityIcons
-                    name={item.icon}
-                    size={21}
-                    color={selected ? theme.green : "#7b897d"}
-                  />
-                ) : (
-                  <Feather
-                    name={item.icon}
-                    size={21}
-                    color={selected ? theme.green : "#7b897d"}
-                  />
-                )}
-
-                <Text style={selected ? styles.tabTextActive : styles.tabText}>
-                  {item.label}
-                </Text>
-
-                {selected && <View style={styles.tabActiveLine} />}
-              </TouchableOpacity>
-            );
-          })}
-        </View>
-      </View>
+      {content}
     </SafeAreaView>
   );
 }
@@ -261,6 +286,32 @@ const styles = StyleSheet.create({
   safe: {
     flex: 1,
     backgroundColor: theme.greenDark,
+  },
+
+  webSafe: {
+    flex: 1,
+    backgroundColor: theme.greenDark,
+  },
+
+  webCenter: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 16,
+  },
+
+  phoneShell: {
+    width: 430,
+    maxWidth: "100%",
+    backgroundColor: theme.bg,
+    borderRadius: 34,
+    overflow: "hidden",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.18)",
+    shadowColor: "#000",
+    shadowOpacity: 0.28,
+    shadowRadius: 20,
+    elevation: 16,
   },
 
   app: {

@@ -32,7 +32,7 @@ The system allows members to view their savings, loans, dividends, and profile i
 
 ---
 
-## This app is made for SMI coop, test rani
+## React Native + Expo
 
 To run:
 

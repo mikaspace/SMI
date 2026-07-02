@@ -7,17 +7,29 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
+  Platform,
+  useWindowDimensions,
 } from "react-native";
 import { Feather, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 
 export default function AdminDashboardScreen() {
   const router = useRouter();
+  const { width, height } = useWindowDimensions();
   const [activeTab, setActiveTab] = useState("overview");
+
+  const isDesktopWeb = Platform.OS === "web" && width >= 768;
 
   return (
     <View style={styles.page}>
-      <View style={styles.phone}>
+      <View
+        style={[
+          styles.phone,
+          isDesktopWeb
+            ? [styles.phoneWeb, { height: Math.min(height - 32, 900) }]
+            : styles.phoneMobile,
+        ]}
+      >
         <View style={styles.header}>
           {activeTab === "overview" && (
             <>
@@ -117,6 +129,7 @@ function OverviewContent() {
     <View style={styles.overviewWrapper}>
       <View style={styles.statsGrid}>
         <StatCard icon="users" value="6" label="Total Members" sub="5 active" />
+
         <StatCard
           icon="piggy-bank-outline"
           value="₱283k"
@@ -124,8 +137,20 @@ function OverviewContent() {
           sub="Share capital"
           type="material"
         />
-        <StatCard icon="credit-card" value="₱369k" label="Total Loans" sub="Outstanding" />
-        <StatCard icon="trending-up" value="₱33k" label="Dividends Paid" sub="FY 2024" />
+
+        <StatCard
+          icon="credit-card"
+          value="₱369k"
+          label="Total Loans"
+          sub="Outstanding"
+        />
+
+        <StatCard
+          icon="trending-up"
+          value="₱33k"
+          label="Dividends Paid"
+          sub="FY 2024"
+        />
       </View>
 
       <View style={styles.chartCard}>
@@ -450,15 +475,6 @@ function AdminProfileHeader() {
       <View style={styles.fullAccessBadge}>
         <Text style={styles.fullAccessText}>• Full Access</Text>
       </View>
-
-      <View style={styles.colorDots}>
-        <View style={[styles.colorDot, { backgroundColor: "#19a98a" }]} />
-        <View style={[styles.colorDot, styles.colorDotActive, { backgroundColor: "#1594bd" }]} />
-        <View style={[styles.colorDot, { backgroundColor: "#8a49df" }]} />
-        <View style={[styles.colorDot, { backgroundColor: "#c7681d" }]} />
-        <View style={[styles.colorDot, { backgroundColor: "#c92f6a" }]} />
-        <View style={[styles.colorDot, { backgroundColor: "#3563d9" }]} />
-      </View>
     </View>
   );
 }
@@ -543,7 +559,6 @@ function MemberSmall({ name, id, savings, status }) {
       <View>
         <Text style={styles.memberSavings}>{savings}</Text>
         <View style={styles.cautionBadge}>
-          <Ionicons name="shield-outline" size={11} color="#ff6b1a" />
           <Text style={styles.cautionText}>{status}</Text>
         </View>
       </View>
@@ -684,26 +699,35 @@ const styles = StyleSheet.create({
   },
 
   phone: {
-    width: 390,
-    height: 844,
     backgroundColor: "#eafff4",
-    borderRadius: 36,
     overflow: "hidden",
+  },
+
+  phoneWeb: {
+    width: 390,
+    borderRadius: 36,
     borderWidth: 1,
     borderColor: "#2b7553",
+  },
+
+  phoneMobile: {
+    flex: 1,
+    width: "100%",
+    height: "100%",
+    borderRadius: 0,
+    borderWidth: 0,
   },
 
   header: {
     backgroundColor: "#06472f",
     paddingHorizontal: 18,
-    paddingTop: 24,
+    paddingTop: Platform.OS === "ios" ? 52 : 34,
     paddingBottom: 16,
   },
 
   portalRow: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 4,
   },
 
   portalText: {
@@ -725,11 +749,13 @@ const styles = StyleSheet.create({
     color: "#ffffff",
     fontSize: 20,
     fontWeight: "900",
+    flex: 1,
   },
 
   headerActions: {
     flexDirection: "row",
     alignItems: "center",
+    marginLeft: 8,
   },
 
   toggleButton: {
@@ -749,7 +775,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#1c6346",
     justifyContent: "center",
     alignItems: "center",
-    marginLeft: 6,
     position: "relative",
   },
 
@@ -767,7 +792,6 @@ const styles = StyleSheet.create({
     color: "#ffffff",
     fontSize: 21,
     fontWeight: "900",
-    marginTop: 18,
   },
 
   pageSub: {
@@ -792,123 +816,7 @@ const styles = StyleSheet.create({
     color: "#9fc9b5",
     fontSize: 13,
     marginLeft: 9,
-  },
-
-  requestsTitle: {
-    color: "#ffffff",
-    fontSize: 23,
-    fontWeight: "900",
-    marginTop: 4,
-  },
-
-  requestsSub: {
-    color: "#37e6a3",
-    fontSize: 14,
-    marginTop: 5,
-    marginBottom: 14,
-  },
-
-  loanDropdownButton: {
-    height: 40,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: "#1c8c62",
-    backgroundColor: "#075b3c",
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 13,
-  },
-
-  loanDropdownText: {
     flex: 1,
-    color: "#d9fff0",
-    fontSize: 14,
-    fontWeight: "700",
-    marginLeft: 10,
-  },
-
-  loanDropdownMenu: {
-    maxHeight: 190,
-    borderRadius: 12,
-    backgroundColor: "#075b3c",
-    borderWidth: 1,
-    borderColor: "#1c8c62",
-    marginTop: 6,
-    overflow: "hidden",
-  },
-
-  loanDropdownScroll: {
-    maxHeight: 190,
-  },
-
-  loanDropdownItem: {
-    height: 36,
-    paddingHorizontal: 13,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-
-  loanDropdownItemActive: {
-    height: 36,
-    paddingHorizontal: 13,
-    backgroundColor: "#0a704a",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-
-  loanDropdownItemText: {
-    color: "#d9fff0",
-    fontSize: 12,
-    fontWeight: "700",
-  },
-
-  loanDropdownItemTextActive: {
-    color: "#37e6a3",
-    fontSize: 12,
-    fontWeight: "900",
-  },
-
-  requestFilterRow: {
-    flexDirection: "row",
-    marginTop: 14,
-  },
-
-  requestFilterChip: {
-    height: 32,
-    minWidth: 62,
-    borderRadius: 11,
-    backgroundColor: "#0b6a47",
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: 10,
-    paddingHorizontal: 12,
-  },
-
-  requestFilterChipActive: {
-    height: 32,
-    minWidth: 50,
-    borderRadius: 11,
-    backgroundColor: "#0c8559",
-    borderWidth: 1,
-    borderColor: "#24e4a0",
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: 10,
-    paddingHorizontal: 12,
-  },
-
-  requestFilterChipText: {
-    color: "#b9e8d2",
-    fontSize: 12,
-    fontWeight: "900",
-  },
-
-  requestFilterChipActiveText: {
-    color: "#37e6a3",
-    fontSize: 12,
-    fontWeight: "900",
   },
 
   content: {
@@ -917,7 +825,7 @@ const styles = StyleSheet.create({
   },
 
   overviewWrapper: {
-    paddingHorizontal: 22,
+    paddingHorizontal: 18,
     paddingTop: 18,
     paddingBottom: 90,
   },
@@ -930,7 +838,7 @@ const styles = StyleSheet.create({
 
   statCard: {
     width: "48%",
-    height: 130,
+    minHeight: 124,
     backgroundColor: "#ffffff",
     borderRadius: 12,
     padding: 14,
@@ -944,7 +852,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#e6fff2",
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 20,
+    marginBottom: 18,
   },
 
   statValue: {
@@ -969,7 +877,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#ffffff",
     borderRadius: 15,
     padding: 16,
-    marginTop: 2,
     marginBottom: 16,
   },
 
@@ -1054,12 +961,13 @@ const styles = StyleSheet.create({
 
   memberSmallCard: {
     backgroundColor: "#ffffff",
-    height: 63,
+    minHeight: 63,
     borderRadius: 12,
-    marginBottom: 2,
+    marginBottom: 8,
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 12,
+    paddingVertical: 10,
   },
 
   smallInitial: {
@@ -1098,8 +1006,6 @@ const styles = StyleSheet.create({
   },
 
   cautionBadge: {
-    flexDirection: "row",
-    alignItems: "center",
     backgroundColor: "#fff1e6",
     borderRadius: 10,
     paddingHorizontal: 7,
@@ -1111,11 +1017,10 @@ const styles = StyleSheet.create({
     color: "#ff6b1a",
     fontSize: 10,
     fontWeight: "800",
-    marginLeft: 3,
   },
 
   listWrapper: {
-    padding: 20,
+    padding: 18,
     paddingBottom: 90,
   },
 
@@ -1127,10 +1032,11 @@ const styles = StyleSheet.create({
   },
 
   recordHeader: {
-    height: 66,
+    minHeight: 66,
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 13,
+    paddingVertical: 10,
   },
 
   recordInitial: {
@@ -1188,7 +1094,7 @@ const styles = StyleSheet.create({
   },
 
   recordStats: {
-    height: 52,
+    minHeight: 52,
     borderTopWidth: 1,
     borderTopColor: "#e7eee9",
     flexDirection: "row",
@@ -1200,6 +1106,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderRightWidth: 1,
     borderRightColor: "#e7eee9",
+    paddingVertical: 8,
   },
 
   recordStatValue: {
@@ -1223,6 +1130,126 @@ const styles = StyleSheet.create({
     color: "#ff4f00",
     fontSize: 10,
     marginTop: 3,
+  },
+
+  requestsTitle: {
+    color: "#ffffff",
+    fontSize: 23,
+    fontWeight: "900",
+  },
+
+  requestsSub: {
+    color: "#37e6a3",
+    fontSize: 14,
+    marginTop: 5,
+    marginBottom: 14,
+  },
+
+  loanDropdownButton: {
+    height: 40,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#1c8c62",
+    backgroundColor: "#075b3c",
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 13,
+  },
+
+  loanDropdownText: {
+    flex: 1,
+    color: "#d9fff0",
+    fontSize: 14,
+    fontWeight: "700",
+    marginLeft: 10,
+  },
+
+  loanDropdownMenu: {
+    maxHeight: 170,
+    borderRadius: 12,
+    backgroundColor: "#075b3c",
+    borderWidth: 1,
+    borderColor: "#1c8c62",
+    marginTop: 6,
+    overflow: "hidden",
+  },
+
+  loanDropdownScroll: {
+    maxHeight: 170,
+  },
+
+  loanDropdownItem: {
+    minHeight: 36,
+    paddingHorizontal: 13,
+    paddingVertical: 9,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+
+  loanDropdownItemActive: {
+    minHeight: 36,
+    paddingHorizontal: 13,
+    paddingVertical: 9,
+    backgroundColor: "#0a704a",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+
+  loanDropdownItemText: {
+    color: "#d9fff0",
+    fontSize: 12,
+    fontWeight: "700",
+    flex: 1,
+  },
+
+  loanDropdownItemTextActive: {
+    color: "#37e6a3",
+    fontSize: 12,
+    fontWeight: "900",
+    flex: 1,
+  },
+
+  requestFilterRow: {
+    flexDirection: "row",
+    marginTop: 14,
+  },
+
+  requestFilterChip: {
+    height: 32,
+    minWidth: 62,
+    borderRadius: 11,
+    backgroundColor: "#0b6a47",
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 8,
+    paddingHorizontal: 10,
+  },
+
+  requestFilterChipActive: {
+    height: 32,
+    minWidth: 50,
+    borderRadius: 11,
+    backgroundColor: "#0c8559",
+    borderWidth: 1,
+    borderColor: "#24e4a0",
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 8,
+    paddingHorizontal: 10,
+  },
+
+  requestFilterChipText: {
+    color: "#b9e8d2",
+    fontSize: 12,
+    fontWeight: "900",
+  },
+
+  requestFilterChipActiveText: {
+    color: "#37e6a3",
+    fontSize: 12,
+    fontWeight: "900",
   },
 
   requestsWrapper: {
@@ -1424,31 +1451,14 @@ const styles = StyleSheet.create({
     fontWeight: "800",
   },
 
-  colorDots: {
-    flexDirection: "row",
-    marginTop: 18,
-  },
-
-  colorDot: {
-    width: 22,
-    height: 22,
-    borderRadius: 11,
-    marginHorizontal: 4,
-  },
-
-  colorDotActive: {
-    borderWidth: 3,
-    borderColor: "#ffffff",
-  },
-
   profileContent: {
-    paddingHorizontal: 20,
+    paddingHorizontal: 18,
     paddingBottom: 90,
   },
 
   profileStatsCard: {
-    marginTop: -34,
-    height: 68,
+    marginTop: 18,
+    minHeight: 68,
     backgroundColor: "#ffffff",
     borderRadius: 14,
     flexDirection: "row",
@@ -1490,24 +1500,28 @@ const styles = StyleSheet.create({
   },
 
   profileRowInfo: {
-    height: 43,
+    minHeight: 43,
     borderBottomWidth: 1,
     borderBottomColor: "#e7eee9",
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: 15,
+    paddingVertical: 10,
   },
 
   profileRowLabel: {
     color: "#9b8ead",
     fontSize: 12,
+    flex: 1,
   },
 
   profileRowValue: {
     color: "#002c1d",
     fontSize: 13,
     fontWeight: "800",
+    textAlign: "right",
+    flex: 1,
   },
 
   profileUploadButton: {
@@ -1553,8 +1567,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-around",
-    borderTopLeftRadius: 18,
-    borderTopRightRadius: 18,
+    borderTopLeftRadius: Platform.OS === "web" ? 18 : 0,
+    borderTopRightRadius: Platform.OS === "web" ? 18 : 0,
   },
 
   bottomTab: {

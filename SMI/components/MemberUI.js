@@ -54,6 +54,12 @@ const tabs = [
     library: "Feather",
   },
   {
+    label: "Requests",
+    route: "/member/RequestsScreen",
+    icon: "clipboard",
+    library: "Feather",
+  },
+  {
     label: "Profile",
     route: "/member/ProfileScreen",
     icon: "user",
@@ -135,13 +141,13 @@ export function MemberScreen({ active, title, subtitle, children }) {
               {item.library === "MaterialCommunityIcons" ? (
                 <MaterialCommunityIcons
                   name={item.icon}
-                  size={21}
+                  size={20}
                   color={selected ? theme.green : "#7b897d"}
                 />
               ) : (
                 <Feather
                   name={item.icon}
-                  size={21}
+                  size={20}
                   color={selected ? theme.green : "#7b897d"}
                 />
               )}
@@ -233,6 +239,7 @@ export function InfoRow({ label, value }) {
 export function StatusBadge({ type = "success", text }) {
   const isPending = type === "pending";
   const isSettled = type === "settled";
+  const isDanger = type === "danger";
 
   return (
     <View
@@ -240,12 +247,27 @@ export function StatusBadge({ type = "success", text }) {
         styles.statusBadge,
         isPending && styles.statusPending,
         isSettled && styles.statusSettled,
+        isDanger && styles.statusDanger,
       ]}
     >
       <Ionicons
-        name={isPending ? "time-outline" : "checkmark-circle-outline"}
+        name={
+          isPending
+            ? "time-outline"
+            : isDanger
+            ? "close-circle-outline"
+            : "checkmark-circle-outline"
+        }
         size={13}
-        color={isPending ? "#e86f00" : isSettled ? "#7d8175" : theme.success}
+        color={
+          isPending
+            ? "#e86f00"
+            : isDanger
+            ? theme.danger
+            : isSettled
+            ? "#7d8175"
+            : theme.success
+        }
       />
 
       <Text
@@ -253,6 +275,7 @@ export function StatusBadge({ type = "success", text }) {
           styles.statusText,
           isPending && styles.statusTextPending,
           isSettled && styles.statusTextSettled,
+          isDanger && styles.statusTextDanger,
         ]}
       >
         {text}
@@ -609,6 +632,11 @@ const styles = StyleSheet.create({
     borderColor: "#d1cabd",
   },
 
+  statusDanger: {
+    backgroundColor: "#fff0ef",
+    borderColor: "#f1b8b8",
+  },
+
   statusText: {
     color: theme.success,
     fontSize: 11,
@@ -622,6 +650,10 @@ const styles = StyleSheet.create({
 
   statusTextSettled: {
     color: "#7d8175",
+  },
+
+  statusTextDanger: {
+    color: theme.danger,
   },
 
   notice: {
@@ -651,8 +683,8 @@ const styles = StyleSheet.create({
 
   bottomNav: {
     position: "absolute",
-    left: 14,
-    right: 14,
+    left: 10,
+    right: 10,
     bottom: 14,
     height: 70,
     backgroundColor: theme.card,
@@ -678,14 +710,14 @@ const styles = StyleSheet.create({
 
   tabText: {
     color: "#7b897d",
-    fontSize: 10,
+    fontSize: 9,
     marginTop: 4,
     fontWeight: "700",
   },
 
   tabTextActive: {
     color: theme.green,
-    fontSize: 10,
+    fontSize: 9,
     marginTop: 4,
     fontWeight: "900",
   },

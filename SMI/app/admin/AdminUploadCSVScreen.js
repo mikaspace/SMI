@@ -8,6 +8,8 @@ import {
   TouchableOpacity,
   ScrollView,
   TextInput,
+  Platform,
+  useWindowDimensions,
 } from "react-native";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
@@ -15,6 +17,9 @@ import * as DocumentPicker from "expo-document-picker";
 
 export default function AdminUploadCSVScreen() {
   const router = useRouter();
+  const { width, height } = useWindowDimensions();
+
+  const isDesktopWeb = Platform.OS === "web" && width >= 768;
 
   const [selectedFile, setSelectedFile] = useState(null);
   const [mode, setMode] = useState("upload");
@@ -106,25 +111,15 @@ export default function AdminUploadCSVScreen() {
 
   return (
     <View style={styles.page}>
-      <View style={styles.phone}>
+      <View
+        style={[
+          styles.phone,
+          isDesktopWeb
+            ? [styles.phoneWeb, { height: Math.min(height - 32, 900) }]
+            : styles.phoneMobile,
+        ]}
+      >
         <View style={styles.header}>
-          <View style={styles.statusRow}>
-            <Text style={styles.time}>9:41</Text>
-
-            <View style={styles.batteryWrap}>
-              <View style={styles.battery} />
-              <View style={styles.batterySmall} />
-            </View>
-          </View>
-
-          <TouchableOpacity
-            style={styles.backButton}
-            onPress={() => router.push("/admin/AdminDashboardScreen")}
-          >
-            <Feather name="arrow-left" size={18} color="#ffffff" />
-            <Text style={styles.backText}>Back to Dashboard</Text>
-          </TouchableOpacity>
-
           <Text style={styles.title}>Upload Records</Text>
           <Text style={styles.subtitle}>Import or manually encode member data</Text>
         </View>
@@ -213,12 +208,7 @@ export default function AdminUploadCSVScreen() {
               <Text style={styles.uploadButtonText}>Upload and Process File</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity
-              style={styles.cancelButton}
-              onPress={() => router.push("/admin/AdminDashboardScreen")}
-            >
-              <Text style={styles.cancelText}>Cancel</Text>
-            </TouchableOpacity>
+            <View style={styles.bottomSpace} />
           </ScrollView>
         ) : (
           <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
@@ -398,8 +388,63 @@ export default function AdminUploadCSVScreen() {
               <Feather name="refresh-cw" size={17} color="#e23b3b" />
               <Text style={styles.clearButtonText}>Clear Form</Text>
             </TouchableOpacity>
+
+            <View style={styles.bottomSpace} />
           </ScrollView>
         )}
+
+        <View style={styles.bottomNav}>
+          <BottomTab
+            icon="bar-chart-2"
+            label="Overview"
+            active={false}
+            onPress={() => router.push("/admin/AdminDashboardScreen")}
+          />
+
+          <BottomTab
+            icon="users"
+            label="Members"
+            active={false}
+            onPress={() =>
+              router.push({
+                pathname: "/admin/AdminDashboardScreen",
+                params: { tab: "members" },
+              })
+            }
+          />
+
+          <BottomTab
+            icon="upload-cloud"
+            label="Upload"
+            active
+            onPress={() => {}}
+          />
+
+          <BottomTab
+            icon="clipboard"
+            label="Reqs"
+            active={false}
+            badge="1"
+            onPress={() =>
+              router.push({
+                pathname: "/admin/AdminDashboardScreen",
+                params: { tab: "requests" },
+              })
+            }
+          />
+
+          <BottomTab
+            icon="user"
+            label="Profile"
+            active={false}
+            onPress={() =>
+              router.push({
+                pathname: "/admin/AdminDashboardScreen",
+                params: { tab: "profile" },
+              })
+            }
+          />
+        </View>
       </View>
     </View>
   );
@@ -439,6 +484,26 @@ function InfoLine({ text }) {
   );
 }
 
+function BottomTab({ icon, label, active, badge, onPress }) {
+  return (
+    <TouchableOpacity style={styles.bottomTab} onPress={onPress}>
+      <View style={styles.bottomIconWrap}>
+        <Feather name={icon} size={20} color={active ? "#37e6a3" : "#50906e"} />
+
+        {badge && (
+          <View style={styles.bottomBadge}>
+            <Text style={styles.bottomBadgeText}>{badge}</Text>
+          </View>
+        )}
+      </View>
+
+      <Text style={active ? styles.bottomTabActiveText : styles.bottomTabText}>
+        {label}
+      </Text>
+    </TouchableOpacity>
+  );
+}
+
 const styles = StyleSheet.create({
   page: {
     flex: 1,
@@ -448,72 +513,36 @@ const styles = StyleSheet.create({
   },
 
   phone: {
-    width: 390,
-    height: 844,
     backgroundColor: "#eafff4",
-    borderRadius: 36,
     overflow: "hidden",
+  },
+
+  phoneWeb: {
+    width: 390,
+    borderRadius: 36,
     borderWidth: 1,
     borderColor: "#2b7553",
+  },
+
+  phoneMobile: {
+    flex: 1,
+    width: "100%",
+    height: "100%",
+    borderRadius: 0,
+    borderWidth: 0,
   },
 
   header: {
     backgroundColor: "#06472f",
     paddingHorizontal: 22,
-    paddingTop: 12,
-    paddingBottom: 24,
-  },
-
-  statusRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-
-  time: {
-    color: "#ffffff",
-    fontSize: 15,
-    fontWeight: "800",
-  },
-
-  batteryWrap: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-
-  battery: {
-    width: 16,
-    height: 9,
-    backgroundColor: "#ffffff",
-    borderRadius: 2,
-  },
-
-  batterySmall: {
-    width: 3,
-    height: 7,
-    backgroundColor: "#ffffff",
-    borderRadius: 1,
-    marginLeft: 2,
-  },
-
-  backButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: 18,
-  },
-
-  backText: {
-    color: "#ffffff",
-    fontSize: 13,
-    fontWeight: "700",
-    marginLeft: 8,
+    paddingTop: Platform.OS === "ios" ? 52 : 34,
+    paddingBottom: 22,
   },
 
   title: {
     color: "#ffffff",
     fontSize: 24,
     fontWeight: "900",
-    marginTop: 24,
   },
 
   subtitle: {
@@ -699,22 +728,6 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
 
-  cancelButton: {
-    height: 48,
-    borderRadius: 13,
-    borderWidth: 1,
-    borderColor: "#efb4a2",
-    backgroundColor: "#fff8ef",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-
-  cancelText: {
-    color: "#e23b3b",
-    fontSize: 14,
-    fontWeight: "900",
-  },
-
   manualCard: {
     backgroundColor: "#ffffff",
     borderRadius: 16,
@@ -798,7 +811,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     flexDirection: "row",
-    marginBottom: 40,
   },
 
   clearButtonText: {
@@ -806,5 +818,59 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "900",
     marginLeft: 8,
+  },
+
+  bottomSpace: {
+    height: 92,
+  },
+
+  bottomNav: {
+    height: 64,
+    backgroundColor: "#003d25",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-around",
+    borderTopLeftRadius: Platform.OS === "web" ? 18 : 0,
+    borderTopRightRadius: Platform.OS === "web" ? 18 : 0,
+  },
+
+  bottomTab: {
+    alignItems: "center",
+    flex: 1,
+  },
+
+  bottomIconWrap: {
+    position: "relative",
+  },
+
+  bottomBadge: {
+    position: "absolute",
+    top: -7,
+    right: -10,
+    width: 17,
+    height: 17,
+    borderRadius: 9,
+    backgroundColor: "#ff6b1a",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  bottomBadgeText: {
+    color: "#ffffff",
+    fontSize: 9,
+    fontWeight: "900",
+  },
+
+  bottomTabText: {
+    color: "#50906e",
+    fontSize: 10,
+    marginTop: 4,
+  },
+
+  bottomTabActiveText: {
+    color: "#37e6a3",
+    fontSize: 10,
+    marginTop: 4,
+    fontWeight: "800",
   },
 });

@@ -1,6 +1,6 @@
 // app/admin/AdminDashboardScreen.js
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -11,14 +11,21 @@ import {
   useWindowDimensions,
 } from "react-native";
 import { Feather, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 
 export default function AdminDashboardScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams();
   const { width, height } = useWindowDimensions();
-  const [activeTab, setActiveTab] = useState("overview");
 
   const isDesktopWeb = Platform.OS === "web" && width >= 768;
+  const [activeTab, setActiveTab] = useState(params.tab || "overview");
+
+  useEffect(() => {
+    if (params.tab) {
+      setActiveTab(params.tab);
+    }
+  }, [params.tab]);
 
   return (
     <View style={styles.page}>
@@ -34,7 +41,11 @@ export default function AdminDashboardScreen() {
           {activeTab === "overview" && (
             <>
               <View style={styles.portalRow}>
-                <Ionicons name="shield-checkmark-outline" size={14} color="#5ff0b1" />
+                <Ionicons
+                  name="shield-checkmark-outline"
+                  size={14}
+                  color="#5ff0b1"
+                />
                 <Text style={styles.portalText}>ADMIN PORTAL</Text>
               </View>
 
@@ -65,7 +76,9 @@ export default function AdminDashboardScreen() {
 
               <View style={styles.searchBox}>
                 <Feather name="search" size={16} color="#8bb8a2" />
-                <Text style={styles.searchText}>Search by name, ID, or username...</Text>
+                <Text style={styles.searchText}>
+                  Search by name, ID, or username...
+                </Text>
               </View>
             </>
           )}
@@ -189,9 +202,26 @@ function OverviewContent() {
 
       <Text style={styles.sectionTitle}>All Members</Text>
 
-      <MemberSmall name="Maria Santos" id="2019-004827" savings="₱52,750.00" status="Caution" />
-      <MemberSmall name="Juan dela Cruz" id="2020-005112" savings="₱38,400.00" status="Caution" />
-      <MemberSmall name="Lourdes Reyes" id="2018-003991" savings="₱71,200.00" status="Excellent" />
+      <MemberSmall
+        name="Maria Santos"
+        id="2019-004827"
+        savings="₱52,750.00"
+        status="Caution"
+      />
+
+      <MemberSmall
+        name="Juan dela Cruz"
+        id="2020-005112"
+        savings="₱38,400.00"
+        status="Caution"
+      />
+
+      <MemberSmall
+        name="Lourdes Reyes"
+        id="2018-003991"
+        savings="₱71,200.00"
+        status="Excellent"
+      />
     </View>
   );
 }
